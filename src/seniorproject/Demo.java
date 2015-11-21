@@ -28,6 +28,15 @@ import org.openstreetmap.gui.jmapviewer.tilesources.BingAerialTileSource;
 import org.openstreetmap.gui.jmapviewer.tilesources.MapQuestOpenAerialTileSource;
 import org.openstreetmap.gui.jmapviewer.tilesources.MapQuestOsmTileSource;
 import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+import java.lang.IllegalStateException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import javafx.scene.control.TreeView;
+import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 /**
  * Demonstrates the usage of {@link JMapViewer}
@@ -52,7 +61,7 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
      */
     public Demo() {
         super("JMapViewer Demo");
-        setSize(400, 400);
+        setSize(683, 384);
 
         treeMap = new JMapViewerTree("Zones");
 
@@ -62,7 +71,7 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
 
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //setExtendedState(JFrame.MAXIMIZED_BOTH);
         JPanel panel = new JPanel();
         JPanel panelTop = new JPanel();
         JPanel panelBottom = new JPanel();
@@ -180,46 +189,13 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
         Layer uhclWestLayer = uhclGroup.addLayer("Uhcl West");
         //Layer germanyEastLayer = uhclGroup.addLayer("Germany East");
         //MapMarkerDot eberstadt = new MapMarkerDot(germanyEastLayer, "Eberstadt", 49.814284999, 8.642065999);
-        MapMarkerDot campus = new MapMarkerDot(uhclWestLayer, "campus", 29.58, -95.09);
-        //29.5807181,-95.0979669
-        //MapMarkerDot empty = new MapMarkerDot(germanyEastLayer, 49.71, 8.64);
-        //MapMarkerDot darmstadt = new MapMarkerDot(germanyEastLayer, "Darmstadt", 49.8588, 8.643);
+        MapMarkerDot campus = new MapMarkerDot(uhclWestLayer, "campus", 29.58, -95.096);
         map().addMapMarker(campus);
-        //map().addMapMarker(ebersheim);
-        //map().addMapMarker(empty);
-//        LayerGroup germanyGroup = new LayerGroup("Germany");
-//        Layer germanyWestLayer = germanyGroup.addLayer("Germany West");
-//        Layer germanyEastLayer = germanyGroup.addLayer("Germany East");
-//        MapMarkerDot eberstadt = new MapMarkerDot(germanyEastLayer, "Eberstadt", 49.814284999, 8.642065999);
-//        MapMarkerDot ebersheim = new MapMarkerDot(germanyWestLayer, "Ebersheim", 49.91, 8.24);
-//        MapMarkerDot empty = new MapMarkerDot(germanyEastLayer, 49.71, 8.64);
-//        MapMarkerDot darmstadt = new MapMarkerDot(germanyEastLayer, "Darmstadt", 49.8588, 8.643);
-//        map().addMapMarker(eberstadt);
-//        map().addMapMarker(ebersheim);
-//        map().addMapMarker(empty);
-        //Layer franceLayer = treeMap.addLayer("France");
-        //map().addMapMarker(new MapMarkerDot(franceLayer, "La Gallerie", 48.71, -1));
-        ///map().addMapMarker(new MapMarkerDot(43.604, 1.444));
-        //map().addMapMarker(new MapMarkerCircle(53.343, -6.267, 0.666));
-        //map().addMapRectangle(new MapRectangleImpl(new Coordinate(53.343, -6.267), new Coordinate(43.604, 1.444)));
-        //map().addMapMarker(darmstadt);
+        openFile();
+        readRecords();
+        closeFile();
         treeMap.addLayer(uhclWestLayer);
-        //treeMap.addLayer(germanyWestLayer);
-        //treeMap.addLayer(germanyEastLayer);
-
-        //MapPolygon bermudas = new MapPolygonImpl(c(49, 1), c(45, 10), c(40, 5));
-        //map().addMapPolygon(bermudas);
-        //map().addMapPolygon(new MapPolygonImpl(germanyEastLayer, "Riedstadt", ebersheim, darmstadt, eberstadt, empty));
-
-        //map().addMapMarker(new MapMarkerCircle(germanyWestLayer, "North of Suisse", new Coordinate(48, 7), .5));
-        //Layer spain = treeMap.addLayer("Spain");
-        //map().addMapMarker(new MapMarkerCircle(spain, "La Garena", new Coordinate(40.4838, -3.39), .002));
-        //spain.setVisible(Boolean.FALSE);
-
-        //Layer wales = treeMap.addLayer("UK");
-        //map().addMapRectangle(new MapRectangleImpl(wales, "Wales", c(53.35, -4.57), c(51.64, -2.63)));
-
-        map().setDisplayPosition(new Coordinate(29.58, -95.09), 16);
+        map().setDisplayPosition(new Coordinate(29.58, -95.096), 16);
         // map.setTileGridVisible(true);
 
         map().addMouseListener(new MouseAdapter() {
@@ -253,13 +229,63 @@ public class Demo extends JFrame implements JMapViewerEventListener  {
     private static Coordinate c(double lat, double lon) {
         return new Coordinate(lat, lon);
     }
+    
+   private static Scanner input; 
+
+   // open file clients.txt
+   public void openFile()
+   {
+      try
+      {
+         input = new Scanner(Paths.get("C:\\Users\\jogarcia\\Downloads\\SeniorProject\\SeniorProject\\src\\seniorproject\\latlon.txt")); 
+      } 
+      catch (IOException ioException)
+      {
+         System.err.println("Error opening file. Terminating.");
+         System.exit(1);
+      } 
+   }
+
+   // read record from file
+   public void readRecords()
+   {
+      //System.out.printf("%-10s%-12s%-12s%10s%n", "Account",
+         //"First Name", "Last Name", "Balance");
+
+      try 
+      {
+         while (input.hasNext()) // while there is more to read
+         {
+            // display record contents
+          map().addMapMarker(new MapMarkerDot(input.nextDouble(),input.nextDouble()));
+         
+            //System.out.printf("%-10d%-12s%-12s%10.2f%n", input.nextInt(), 
+              // input.next(), input.next(), input.nextDouble());
+         }
+      } 
+      catch (NoSuchElementException elementException)
+      {
+         System.err.println("File improperly formed. Terminating.");
+      } 
+      catch (IllegalStateException stateException)
+      {
+         System.err.println("Error reading from file. Terminating.");
+      } 
+   } // end method readRecords
+
+   // close file and terminate application
+   public static void closeFile()
+   {
+      if (input != null)
+         input.close();
+   }
 
     /**
      * @param args Main program arguments
      */
-    public static void main(String[] args) {
-        new Demo().setVisible(true);
-    }
+//    public static void main(String[] args) {
+//        new Demo().setVisible(true);
+//    }
 
     private void updateZoomParameters() {
         if (mperpLabelValue != null)
